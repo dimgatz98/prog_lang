@@ -41,7 +41,7 @@ int main(int argc, char **argv){
 	print_vect(cum_diff);
 
 	int res = 0, j = 0, k = int(diff.size()) - 1;
-	for(int i = 0 ; i <= int(diff.size()) / 2 + 1 ; i++){
+	for(int i = 0 ; i <= int(diff.size()) ; i++){
 		if(cum_diff[k] - cum_diff[j] <= -1 * (k - j) * n){
 			//cout << "k: " << k << " j: " << j << endl;
 			res = k - j;
