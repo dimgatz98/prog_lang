@@ -27,18 +27,19 @@ int main(int argc, char **argv){
 		diff.push_back(temp);
 	}
 	f.close();
-	cout << m << " " << n << endl; 
-	print_vect(diff);
+	//cout << m << " " << n << endl; 
+	//print_vect(diff);
 
 	for(int i = 0 ; i < int(diff.size()) ; i++){
 		if(i == 0){
-			cum_diff.push_back(diff[i]);
+			cum_diff.push_back(0);
 			continue;
 		}
 
 		cum_diff.push_back(cum_diff[i - 1] + diff[i]);
 	}
-	print_vect(cum_diff);
+
+	//print_vect(cum_diff);
 
 	int res = 0, j = 0, k = int(diff.size()) - 1;
 	for(int i = 0 ; i <= int(diff.size()) ; i++){
