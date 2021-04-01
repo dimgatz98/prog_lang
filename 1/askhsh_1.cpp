@@ -7,9 +7,35 @@
 
 using namespace std;
 
-void print_vect(std::vector<int> v){
+bool compare(pair<int, int> a, pair<int, int> b){
+	if(a.first == b.first){
+		return a.second < b.second;
+	}
+	return a.first > b.first;
+}
+
+int binary_search(vector<pair<int, int> > &cum_diff, int n, int val){
+  	int l = 0;
+    int h = n - 1;
+    int mid;
+  
+    int ans = -1;
+  
+    while (l <= h) {
+        mid = (l + h) / 2;
+        if(cum_diff[mid].first >= val){
+            ans = mid;
+            l = mid + 1;
+        }
+        else
+            h = mid - 1;
+    }
+    return ans;
+}
+
+void print_vect(std::vector<pair<int, int> > v){
 	for(int i = 0 ; i < int(v.size()) ; i ++){
-		cout << v[i] << " ";
+		cout << v[i].first << "," << v[i].second << "  ";
 	}
 	cout << endl;
 	return;
@@ -17,42 +43,44 @@ void print_vect(std::vector<int> v){
 
 int main(int argc, char **argv){
 	int m, n, temp;
-	pair<int, int> sum_i; 
 	std::vector<int> diff; 
-	std::vector<int> cum_diff;
+	std::vector<pair<int, int> > cum_diff;
 	ifstream f(argv[1]);
 	f >> m >> n;
 	for(int i = 0 ; i < m ; i++){
 		f >> temp;
-		diff.push_back(temp);
+		diff.push_back(temp + n);
 	}
 	f.close();
-	//cout << m << " " << n << endl; 
-	//print_vect(diff);
-
-	for(int i = 0 ; i < int(diff.size()) ; i++){
-		if(i == 0){
-			cum_diff.push_back(0);
-			continue;
-		}
-
-		cum_diff.push_back(cum_diff[i - 1] + diff[i]);
-	}
-
-	//print_vect(cum_diff);
-
-	int res = 0, j = 0, k = int(diff.size()) - 1;
+	
+    int res = 0;
 	for(int i = 0 ; i <= int(diff.size()) ; i++){
-		if(cum_diff[k] - cum_diff[j] <= -1 * (k - j) * n){
-			//cout << "k: " << k << " j: " << j << endl;
-			res = k - j;
-			break;
+		if(i == 0){
+			cum_diff.push_back(make_pair(diff[0], 0));
 		}
 
-		if(cum_diff[k] - cum_diff[k - 1] > cum_diff[j + 1] - cum_diff[j])
-			k = k - 1;
 		else
-			j = j + 1;
+			cum_diff.push_back(make_pair(cum_diff[i - 1].first + diff[i], i));
+		
+		if(cum_diff[i].first <= 0){
+			res = i + 1;
+		}
+	}
+	
+	sort(cum_diff.begin(), cum_diff.end(), compare);
+	
+	vector<int> min_index;
+	min_index.push_back(cum_diff[0].second);
+	for(int i = 1; i < int(cum_diff.size()); i++) {
+	    min_index.push_back(min(min_index[i - 1], cum_diff[i].second));
+    }
+
+    int sum = 0, index;
+	for(int i = 0 ; i < int(cum_diff.size()) ; i++){		
+		sum += diff[i];
+		index = binary_search(cum_diff, int(cum_diff.size()), sum);
+        if(index != -1 && min_index[index] < i && res < i - min_index[index])
+            res = i - min_index[index];
 	}
 
 	cout << res << endl;
