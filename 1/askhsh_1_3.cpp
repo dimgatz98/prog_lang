@@ -7,14 +7,6 @@
 
 using namespace std;
 
-void print_vect(std::vector<int> v){
-	for(int i = 0 ; i < int(v.size()) ; i ++){
-		cout << v[i] << "  ";
-	}
-	cout << endl;
-	return;
-}
-
 int solve(vector<int> v, int res){
 	vector<int> max_from_beg, min_from_end(v.size());
 	
@@ -27,9 +19,6 @@ int solve(vector<int> v, int res){
 	for(int i = v.size() - 2 ; i >= 0 ; i--){
 		min_from_end[i] = min(min_from_end[i + 1], v[i]);
 	}
-
-	//print_vect(min_from_end);
-	//print_vect(max_from_beg);
 
 	int i = 0, j = 0;
     while (j < int(v.size()) && i < int(v.size())) {
@@ -70,9 +59,6 @@ int main(int argc, char **argv){
 		}
 	}
 	
-    //print_vect(diff);	
-    //print_vect(cum_diff);
-
     res = solve(cum_diff, res);
 
 	cout << res << endl;
