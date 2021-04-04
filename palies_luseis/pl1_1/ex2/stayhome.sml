@@ -10,7 +10,7 @@ fun parse fileName =
           in
             if newLineOption = NONE
             then (rev acc)
-            else ( readLines ( valOf newLineOption :: acc ))
+            else ( readLines ( explode (valOf newLineOption ) :: acc ))
         end;
 
         val grid = readLines []
