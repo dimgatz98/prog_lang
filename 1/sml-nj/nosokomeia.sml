@@ -25,14 +25,6 @@ fun split_and_print_list [] = (print "\n"; ())
 	|split_and_print_list (a :: xs) =
 		((print (a ^ " ") ); split_and_print_list xs);
 
-fun get_first_gap (arr, len, idx) =
-        if idx >= len then idx
-        else if Array.sub(arr, idx) then get_first_gap (arr, len, (idx + 1) )
-        else idx
-
-fun append (acc, []) = ()|
-	append (acc, h::xs) = (h :: acc; append (acc, xs) );
-
 fun split_at_space ([], acc) = acc|
 	split_at_space (a::xs, acc) = 
 	let 
