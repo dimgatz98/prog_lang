@@ -19,12 +19,12 @@ fun parse fileName =
     end
 
 fun split_at_space ([], acc) = acc|
-	split_at_space (a::xs, acc) = 
-	let 
-		val temp = (acc @ String.tokens Char.isSpace a)
-	in
-		split_at_space (xs, temp)
-	end
+			split_at_space (a::xs, acc) = 
+			let 
+				val temp = (acc @ String.tokens Char.isSpace a)
+			in
+				split_at_space (xs, temp)
+			end
 
 fun print_list [] = print "\n"|
 	print_list (a::xs) = (print (a ^  " "); print_list xs); 
@@ -40,31 +40,54 @@ fun print_list_of_lists [] = ()|
 fun list_pop_front (h::xs) = 
 	xs
 
+fun squares_that_have_access (queue, [], count, square, x, y) = queue @ square|
+	squares_that_have_access (queue, h::xs, count, square, x, y) =
+		let 
+			val l = queue @ square
+		in
+			if (count = 0)
+				then if (h = "R") then squares_that_have_access (l, xs, (count + 1), [(x, (y - 1))], x, y)
+				else squares_that_have_access (l, xs, count + 1, [], x, y)
+
+			else if (count = 1)
+				then if (h = "D") then squares_that_have_access (l, xs, (count + 1), [((x - 1), y)], x, y)
+				else squares_that_have_access (l, xs, count + 1, [], x, y)
+
+			else if (count = 2)
+				then if (h = "L") then squares_that_have_access (l, xs, (count + 1), [(x, (y + 1))], x, y)
+				else squares_that_have_access (l, xs, count + 1, [], x, y)
+
+			else if (count = 3)
+				then if (h = "U") then squares_that_have_access (l, xs, (count + 1), [((x + 1), y)], x, y)
+				else squares_that_have_access (l, xs, count + 1, [], x, y)
+			else
+				l
+		end
+
 fun solve filename = 
 	let
-		fun squares_that_have_access (queue, [], count, square, x, y) = queue @ square|
-			squares_that_have_access (queue, h::xs, count, square, x, y) =
-				let 
-					val l = queue @ square
-				in
-					if (count = 0)
-						then if (h = "R") then squares_that_have_access (l, xs, (count + 1), [(x, (y - 1))], x, y)
-						else squares_that_have_access (l, xs, count + 1, [], x, y)
+		fun squares_that_have_access (queue, h::xs, count, square, x, y) =
+			let 
+				val l = queue @ square
+			in
+				if count = 0
+					then if h = "R" then squares_that_have_access (l, xs, count + 1, [(x, y - 1)], x, y)
+					else squares_that_have_access (l, xs, count + 1, [], x, y)
 
-					else if (count = 1)
-						then if (h = "D") then squares_that_have_access (l, xs, (count + 1), [((x - 1), y)], x, y)
-						else squares_that_have_access (l, xs, count + 1, [], x, y)
+				else if count = 1
+					then if h = "D" then squares_that_have_access (l, xs, count + 1, [(x - 1, y)], x, y)
+					else squares_that_have_access (l, xs, count + 1, [], x, y)
 
-					else if (count = 2)
-						then if (h = "L") then squares_that_have_access (l, xs, (count + 1), [(x, (y + 1))], x, y)
-						else squares_that_have_access (l, xs, count + 1, [], x, y)
+				else if count = 2
+					then if h = "L" then squares_that_have_access (l, xs, count + 1, [(x, y + 1)], x, y)
+					else squares_that_have_access (l, xs, count + 1, [], x, y)
 
-					else if (count = 3)
-						then if (h = "U") then squares_that_have_access (l, xs, (count + 1), [((x + 1), y)], x, y)
-						else squares_that_have_access (l, xs, count + 1, [], x, y)
-					else
-						l
-				end
+				else if count = 3
+					then if h = "U" then squares_that_have_access (l, xs, count + 1, [(x + 1, y)], x, y)
+					else squares_that_have_access (l, xs, count + 1, [], x, y)
+				else
+					(print_list_of_tuples l; l)
+			end
 
 		fun split_at_space ([], acc) = acc|
 			split_at_space (a::xs, acc) = 
@@ -142,16 +165,23 @@ fun solve filename =
 						if ((row = 0) andalso (Array2.sub(arr, row, count) = "U") ) 
 							then calc_winning_row_squares (arr, n, m, row, count + 1, l, [(row, count)])
 						
+						else if ((row = 0) andalso (Array2.sub(arr, row, count) <> "U") ) 
+							then (calc_winning_row_squares (arr, n, m, row, count + 1, l, [] ))
+						
 						else if ((row = n - 1) andalso (Array2.sub(arr, row, count) = "D") )
 							then calc_winning_row_squares (arr, n, m, row, count + 1, l, [(row, count)])
 
-						else
-							calc_winning_row_squares (arr, n, m, row, count + 1, l, [])
+						else if (row = n - 1) andalso (Array2.sub(arr, row, count) <> "D") 
+							then calc_winning_row_squares (arr, n, m, row, count + 1, l, []) 
+						
 
 				else 
 					if (row = 0)
 						then 
 							calc_winning_row_squares (arr, n, m, n - 1, 0, l, [])
+
+					else
+						l
 
 				else 
 					l
@@ -171,14 +201,21 @@ fun solve filename =
 						if ((col = 0) andalso (Array2.sub(arr, count, col) = "L"))
 							then calc_winning_col_squares (arr, n, m, col, count + 1, l, [(count, col)] )
 						
+						else if ((col = 0) andalso (Array2.sub(arr, count, col) <> "L") ) 
+							then calc_winning_col_squares (arr, n, m, col, count + 1, l, [] )
+						
 						else if ((col = m - 1) andalso (Array2.sub(arr, count, col) = "R") )
 							then calc_winning_col_squares (arr, n, m, col, count + 1, l, [(count, col)] )
 
-						else
-							calc_winning_col_squares (arr, n, m, col, count + 1, l, [] )
+						else if ((col = m - 1) andalso (Array2.sub(arr, count, col) <> "R") )
+							then calc_winning_col_squares (arr, n, m, col, count + 1, l, [] )
+						
 
 				else if (col = 0)
 					then calc_winning_col_squares (arr, n, m, m - 1, 0, l, [])
+					
+					else
+						l
 
 				else
 					l
@@ -202,18 +239,18 @@ fun solve filename =
 		val n = #1 temp;
 		val m = #2 temp;
 		val arr = #3 temp;
-		val winning_list =  calc_winning_squares (arr, n, m, [], [], 0);
+		val winning_list = (calc_winning_squares (arr, n, m, [], [], 0) );
 
 		fun count_winning_squares (arr, [], count) = count|
-			count_winning_squares (arr, (a, b)::xs, count) = 
+			count_winning_squares (arr, (a, b)::winning_list, count) = 
 				let
 					fun winning_tree_nodes (arr, [], count) = count|
 						winning_tree_nodes (arr, (a, b)::queue, count) =
 							if (a = 0 andalso b = 0)
 								then winning_tree_nodes (arr, squares_that_have_access (queue, ["N", "N", Array2.sub(arr, a, b + 1), Array2.sub(arr, a + 1, b)], 0, [], a, b), count + 1)
 
-							else if (a = n - 1 andalso b = m - 1)
-								then winning_tree_nodes (arr, squares_that_have_access (queue, [Array2.sub(arr, a, b - 1), Array2.sub(arr, a - 1, b), "N", "N"], 0, [], a, b), count + 1)
+							else if (a = n - 1 andalso b = m - 1) then 
+								winning_tree_nodes (arr, squares_that_have_access (queue, [Array2.sub(arr, a, b - 1), Array2.sub(arr, a - 1, b), "N", "N"], 0, [], a, b), count + 1)
 
 							else if (a = 0 andalso b = m - 1)
 								then winning_tree_nodes (arr, squares_that_have_access (queue, [Array2.sub(arr, a, b - 1), "N", "N", Array2.sub(arr, a + 1, b)], 0, [], a, b), count + 1)
@@ -238,8 +275,8 @@ fun solve filename =
 					
 					val counter = count + winning_tree_nodes(arr, [(a, b)], 0);
 				in
-					count_winning_squares (arr, xs, counter)
+					count_winning_squares (arr, winning_list, counter)
 				end
 	in 
-		n*m - count_winning_squares (arr, winning_list, 0)
+		winning_list	
 	end

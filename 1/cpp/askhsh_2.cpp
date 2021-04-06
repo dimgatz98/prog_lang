@@ -15,31 +15,25 @@ int reverse_bfs(std::vector<vector<pair<char, int> > > v, pair<int, int> start, 
 	pair<int, int> s;
 
 	while(!queue.empty()){
-        // Dequeue a vertex from queue and print it
         s = queue.front();
-        //cout << s.first << " " << s.second << endl;
         queue.pop_front();
         count++;
  
         if(s.first != 0 && v[s.first - 1][s.second].second != 1 && v[s.first - 1][s.second].first == 'D'){
             v[s.first - 1][s.second].second = 1;
             queue.push_back(make_pair(s.first - 1, s.second));
-        	//count++;
         }
         if(s.first != m - 1 && v[s.first + 1][s.second].second != 1 && v[s.first + 1][s.second].first == 'U'){
             v[s.first + 1][s.second].second = 1;
             queue.push_back(make_pair(s.first + 1, s.second));
-        	//count++;
         }
         if(s.second != 0 && v[s.first][s.second - 1].second != 1 && v[s.first][s.second - 1].first == 'R'){
             v[s.first][s.second - 1].second = 1;
             queue.push_back(make_pair(s.first, s.second - 1));
-        	//count++;
         }
         if(s.second != n - 1 && v[s.first][s.second + 1].second != 1 && v[s.first][s.second + 1].first == 'L'){
             v[s.first][s.second + 1].second = 1;
             queue.push_back(make_pair(s.first, s.second + 1));
-        	//count++;
         }
     }
     return count;
@@ -59,14 +53,6 @@ int main(int argc, char **argv){
 		}
 	}
 	f.close();
-
-	//cout << m << " " << n << endl; 
-	
-	/*for(int i = 0 ; i < m ; i++){
-		for(int j = 0 ; j < n ; j++)
-			cout << arr[i][j].first << " ";
-		cout << endl;
-	}*/
 
 	for(int i = 0 ; i < m ; i++){
 		if(arr[i][0].first == 'L')
