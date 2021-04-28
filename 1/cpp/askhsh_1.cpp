@@ -22,7 +22,7 @@ int solve(vector<int> v, int res){
 
 	int i = 0, j = 0;
     while (j < int(v.size()) && i < int(v.size())) {
-        if (max_from_beg[i] >= min_from_end[j]) {
+        if (max_from_beg[i] - min_from_end[j] >= 0) {
             res = max(res, int(j - i ) );
             j = j + 1;
         }
@@ -30,11 +30,15 @@ int solve(vector<int> v, int res){
             i = i + 1;
     }
  
+    //cout << "i: " << i << " j: " << j << endl;
+
     return res;
 }
 
 int main(int argc, char **argv){
 	int m, n, temp;
+	//estw oti to diasthma einai j - k
+	//cum_diff[j] - cum_diff[k] <= 0
 	std::vector<int> diff; 
 	std::vector<int> cum_diff;
 	ifstream f(argv[1]);

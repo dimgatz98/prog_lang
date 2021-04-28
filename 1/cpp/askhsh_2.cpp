@@ -8,7 +8,7 @@
 
 using namespace std;
 
-int reverse_bfs(std::vector<vector<pair<char, int> > > v, pair<int, int> start, int n, int m){
+int reverse_bfs(std::vector<vector<char> > &v, pair<int, int> start, int n, int m){
 	list<pair<int, int> > queue;
 	queue.push_back(start);
 	int count = 0;
@@ -19,20 +19,16 @@ int reverse_bfs(std::vector<vector<pair<char, int> > > v, pair<int, int> start, 
         queue.pop_front();
         count++;
  
-        if(s.first != 0 && v[s.first - 1][s.second].second != 1 && v[s.first - 1][s.second].first == 'D'){
-            v[s.first - 1][s.second].second = 1;
+        if(s.first != 0 && v[s.first - 1][s.second] == 'D'){
             queue.push_back(make_pair(s.first - 1, s.second));
         }
-        if(s.first != m - 1 && v[s.first + 1][s.second].second != 1 && v[s.first + 1][s.second].first == 'U'){
-            v[s.first + 1][s.second].second = 1;
+        if(s.first != m - 1 && v[s.first + 1][s.second] == 'U'){
             queue.push_back(make_pair(s.first + 1, s.second));
         }
-        if(s.second != 0 && v[s.first][s.second - 1].second != 1 && v[s.first][s.second - 1].first == 'R'){
-            v[s.first][s.second - 1].second = 1;
+        if(s.second != 0 && v[s.first][s.second - 1] == 'R'){
             queue.push_back(make_pair(s.first, s.second - 1));
         }
-        if(s.second != n - 1 && v[s.first][s.second + 1].second != 1 && v[s.first][s.second + 1].first == 'L'){
-            v[s.first][s.second + 1].second = 1;
+        if(s.second != n - 1 && v[s.first][s.second + 1] == 'L'){
             queue.push_back(make_pair(s.first, s.second + 1));
         }
     }
@@ -45,25 +41,25 @@ int main(int argc, char **argv){
 	vector<pair<int, int> > winning;
 	ifstream f(argv[1]);
 	f >> m >> n;
-	std::vector<vector<pair<char, int> > > arr(m); 
+	std::vector<vector<char> > arr(m); 
 	for(int i = 0 ; i < m ; i++){
 		for(int	j = 0 ; j < n ; j++){
 			f >> temp;
-			arr[i].push_back(make_pair(temp, 0) );
+			arr[i].push_back(temp);
 		}
 	}
 	f.close();
 
 	for(int i = 0 ; i < m ; i++){
-		if(arr[i][0].first == 'L')
+		if(arr[i][0] == 'L')
 			winning.push_back(make_pair(i,0));
-		if(arr[i][n - 1].first == 'R')
+		if(arr[i][n - 1] == 'R')
 			winning.push_back(make_pair(i,n - 1) );
 	}
 	for(int j = 0 ; j < n ; j++){
-		if(arr[0][j].first == 'U')
+		if(arr[0][j] == 'U')
 			winning.push_back(make_pair(0, j));
-		if(arr[m - 1][j].first == 'D')
+		if(arr[m - 1][j] == 'D')
 			winning.push_back(make_pair(m - 1, j));
 	}
 

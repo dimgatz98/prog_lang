@@ -1,47 +1,26 @@
-fun parse fileName =
-    let
-  	    (* Open input fileName. *)
-      	val inStream = TextIO.openIn fileName
-
-        (* Reads lines until EOF and puts them in a list as char lists *)
-        fun readLines acc =
-          let
-            val newLineOption = TextIO.inputLine inStream
-          in
-            if newLineOption = NONE
-            then (rev acc)
-            else ( readLines ( valOf newLineOption :: acc ))
-        end;
-
-        val grid = readLines []
-    in
-   	    grid
-    end
-
-fun split_at_space ([], acc) = acc|
-	split_at_space (a::xs, acc) = 
-	let 
-		val temp = (acc @ String.tokens Char.isSpace a)
-	in
-		split_at_space (xs, temp)
-	end
-
-fun print_list [] = print "\n"|
-	print_list (a::xs) = (print (a ^  " "); print_list xs); 
-
-fun print_list_of_tuples [] = print "\n"|
-	print_list_of_tuples ((a, b)::xs) = 
-		(print (("%" ^ (Int.toString a) ^ " , "));print (((Int.toString b) ^ "% ") );print_list_of_tuples xs);
-
-fun print_list_of_lists [] = ()|
-	print_list_of_lists (h::xs) = 
-		((print_list h); print_list_of_lists xs)
-
-fun list_pop_front (h::xs) = 
-	xs
-
-fun solve filename = 
+fun loop_rooms filename = 
 	let
+		fun list_pop_front (h::xs) = 
+			xs
+
+		fun parse fileName =
+		    let
+		  	    (* Open input fileName. *)
+		      	val inStream = TextIO.openIn fileName
+		        (* Reads lines until EOF and puts them in a list as char lists *)
+		        fun readLines acc =
+		          let
+		            val newLineOption = TextIO.inputLine inStream
+		          in
+		            if newLineOption = NONE
+		            then (rev acc)
+		            else ( readLines ( valOf newLineOption :: acc ))
+		        end;
+		        val grid = readLines []
+		    in
+		   	    grid
+		    end
+		    
 		fun squares_that_have_access (queue, [], count, square, x, y) = queue @ square|
 			squares_that_have_access (queue, h::xs, count, square, x, y) =
 				let 
@@ -129,7 +108,12 @@ fun solve filename =
 				(n, m, create_array (xs) )
 			end
 
-		fun calc_winning_row_squares (arr, n, m, row, count, acc, square) =
+		val temp = calc_input (split_at_space ((parse filename, []) ) );
+		val n = #1 temp;
+		val m = #2 temp;
+		val arr = #3 temp;
+
+		fun calc_winning_row_squares (n, m, row, count, acc, square) =
 			let 
 
 				val l = acc @ square
@@ -140,25 +124,25 @@ fun solve filename =
 					then 
 						
 						if ((row = 0) andalso (Array2.sub(arr, row, count) = "U") ) 
-							then calc_winning_row_squares (arr, n, m, row, count + 1, l, [(row, count)])
+							then calc_winning_row_squares (n, m, row, count + 1, l, [(row, count)])
 						
 						else if ((row = n - 1) andalso (Array2.sub(arr, row, count) = "D") )
-							then calc_winning_row_squares (arr, n, m, row, count + 1, l, [(row, count)])
+							then calc_winning_row_squares (n, m, row, count + 1, l, [(row, count)])
 
 						else
-							calc_winning_row_squares (arr, n, m, row, count + 1, l, [])
+							calc_winning_row_squares (n, m, row, count + 1, l, [])
 
 				else 
 					if (row = 0)
 						then 
-							calc_winning_row_squares (arr, n, m, n - 1, 0, l, [])
+							calc_winning_row_squares (n, m, n - 1, 0, l, [])
 
 				else 
 					l
 
 			end
 
-		fun calc_winning_col_squares (arr, n, m, col, count, acc, square) = 
+		fun calc_winning_col_squares (n, m, col, count, acc, square) = 
 			let 
 
 				val l = acc @ square
@@ -169,77 +153,73 @@ fun solve filename =
 					then 
 			
 						if ((col = 0) andalso (Array2.sub(arr, count, col) = "L"))
-							then calc_winning_col_squares (arr, n, m, col, count + 1, l, [(count, col)] )
+							then calc_winning_col_squares (n, m, col, count + 1, l, [(count, col)] )
 						
 						else if ((col = m - 1) andalso (Array2.sub(arr, count, col) = "R") )
-							then calc_winning_col_squares (arr, n, m, col, count + 1, l, [(count, col)] )
+							then calc_winning_col_squares (n, m, col, count + 1, l, [(count, col)] )
 
 						else
-							calc_winning_col_squares (arr, n, m, col, count + 1, l, [] )
+							calc_winning_col_squares (n, m, col, count + 1, l, [] )
 
 				else if (col = 0)
-					then calc_winning_col_squares (arr, n, m, m - 1, 0, l, [])
+					then calc_winning_col_squares (n, m, m - 1, 0, l, [])
 
 				else
 					l
 
 			end
 
-		fun calc_winning_squares (arr, n, m, acc, square_list, count) = 
+		fun calc_winning_squares (n, m, acc, square_list, count) = 
 			let 
 				val l = acc @ square_list
 			in
 				if count = 0
-					then calc_winning_squares (arr, n, m, l, (calc_winning_col_squares (arr, n, m, 0, 0, [], [])), count + 1)
+					then calc_winning_squares (n, m, l, (calc_winning_col_squares (n, m, 0, 0, [], [])), count + 1)
 				else if count = 1
-					then calc_winning_squares (arr, n, m, l, (calc_winning_row_squares (arr, n, m, 0, 0, [], [])), count + 1)
+					then calc_winning_squares (n, m, l, (calc_winning_row_squares (n, m, 0, 0, [], [])), count + 1)
 				
 				else 
 					l
 			end
 
-		val temp = calc_input (split_at_space ((parse filename, []) ) );
-		val n = #1 temp;
-		val m = #2 temp;
-		val arr = #3 temp;
-		val winning_list =  calc_winning_squares (arr, n, m, [], [], 0);
+		val winning_list =  calc_winning_squares (n, m, [], [], 0);
 
-		fun count_winning_squares (arr, [], count) = count|
-			count_winning_squares (arr, (a, b)::xs, count) = 
+		fun count_winning_squares ([], count) = count|
+			count_winning_squares ((a, b)::xs, count) = 
 				let
-					fun winning_tree_nodes (arr, [], count) = count|
-						winning_tree_nodes (arr, (a, b)::queue, count) =
+					fun winning_tree_nodes ([], count) = count|
+						winning_tree_nodes ((a, b)::queue, count) =
 							if (a = 0 andalso b = 0)
-								then winning_tree_nodes (arr, squares_that_have_access (queue, ["N", "N", Array2.sub(arr, a, b + 1), Array2.sub(arr, a + 1, b)], 0, [], a, b), count + 1)
+								then winning_tree_nodes (squares_that_have_access (queue, ["N", "N", Array2.sub(arr, a, b + 1), Array2.sub(arr, a + 1, b)], 0, [], a, b), count + 1)
 
 							else if (a = n - 1 andalso b = m - 1)
-								then winning_tree_nodes (arr, squares_that_have_access (queue, [Array2.sub(arr, a, b - 1), Array2.sub(arr, a - 1, b), "N", "N"], 0, [], a, b), count + 1)
+								then winning_tree_nodes (squares_that_have_access (queue, [Array2.sub(arr, a, b - 1), Array2.sub(arr, a - 1, b), "N", "N"], 0, [], a, b), count + 1)
 
 							else if (a = 0 andalso b = m - 1)
-								then winning_tree_nodes (arr, squares_that_have_access (queue, [Array2.sub(arr, a, b - 1), "N", "N", Array2.sub(arr, a + 1, b)], 0, [], a, b), count + 1)
+								then winning_tree_nodes (squares_that_have_access (queue, [Array2.sub(arr, a, b - 1), "N", "N", Array2.sub(arr, a + 1, b)], 0, [], a, b), count + 1)
 
 							else if (a = n - 1 andalso b = 0)
-								then winning_tree_nodes (arr, squares_that_have_access (queue, ["N", Array2.sub(arr, a - 1, b), Array2.sub(arr, a, b + 1), "N"], 0, [], a, b), count + 1)
+								then winning_tree_nodes (squares_that_have_access (queue, ["N", Array2.sub(arr, a - 1, b), Array2.sub(arr, a, b + 1), "N"], 0, [], a, b), count + 1)
 
 							else if a = 0
-								then winning_tree_nodes (arr, squares_that_have_access (queue, [Array2.sub(arr, a, b - 1), "N", Array2.sub(arr, a, b + 1), Array2.sub(arr, a + 1, b)], 0, [], a, b), count + 1)
+								then winning_tree_nodes (squares_that_have_access (queue, [Array2.sub(arr, a, b - 1), "N", Array2.sub(arr, a, b + 1), Array2.sub(arr, a + 1, b)], 0, [], a, b), count + 1)
 
 							else if a = n - 1
-								then winning_tree_nodes (arr, squares_that_have_access (queue, [Array2.sub(arr, a, b - 1), Array2.sub(arr, a - 1, b), Array2.sub(arr, a, b + 1), "N"], 0, [], a, b), count + 1)
+								then winning_tree_nodes (squares_that_have_access (queue, [Array2.sub(arr, a, b - 1), Array2.sub(arr, a - 1, b), Array2.sub(arr, a, b + 1), "N"], 0, [], a, b), count + 1)
 
 							else if b = 0
-								then winning_tree_nodes (arr, squares_that_have_access (queue, ["N", Array2.sub(arr, a - 1, b), Array2.sub(arr, a, b + 1), Array2.sub(arr, a + 1, b)], 0, [], a, b), count + 1)
+								then winning_tree_nodes (squares_that_have_access (queue, ["N", Array2.sub(arr, a - 1, b), Array2.sub(arr, a, b + 1), Array2.sub(arr, a + 1, b)], 0, [], a, b), count + 1)
 
 							else if b = m - 1
-								then winning_tree_nodes (arr, squares_that_have_access (queue, [Array2.sub(arr, a, b - 1), Array2.sub(arr, a - 1, b), "N", Array2.sub(arr, a + 1, b)], 0, [], a, b), count + 1)
+								then winning_tree_nodes (squares_that_have_access (queue, [Array2.sub(arr, a, b - 1), Array2.sub(arr, a - 1, b), "N", Array2.sub(arr, a + 1, b)], 0, [], a, b), count + 1)
 
 							else
-								winning_tree_nodes (arr, squares_that_have_access (queue, [Array2.sub(arr, a, b - 1), Array2.sub(arr, a - 1, b), Array2.sub(arr, a, b + 1), Array2.sub(arr, a + 1, b)], 0, [], a, b), count + 1)
+								winning_tree_nodes (squares_that_have_access (queue, [Array2.sub(arr, a, b - 1), Array2.sub(arr, a - 1, b), Array2.sub(arr, a, b + 1), Array2.sub(arr, a + 1, b)], 0, [], a, b), count + 1)
 					
-					val counter = count + winning_tree_nodes(arr, [(a, b)], 0);
+					val counter = count + winning_tree_nodes([(a, b)], 0);
 				in
-					count_winning_squares (arr, xs, counter)
+					count_winning_squares (xs, counter)
 				end
 	in 
-		n*m - count_winning_squares (arr, winning_list, 0)
+		print ((Int.toString (n*m - count_winning_squares (winning_list, 0) ) ) ^ "\n"); ()
 	end
