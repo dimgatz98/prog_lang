@@ -7,7 +7,7 @@
 
 using namespace std;
 
-int solve(vector<int> v, int res){
+int solve(vector<int> &v, int res){
 	vector<int> max_from_beg, min_from_end(v.size());
 	
 	max_from_beg.push_back(v[0]);
@@ -29,7 +29,7 @@ int solve(vector<int> v, int res){
         else
             i = i + 1;
     }
- 
+
     //cout << "i: " << i << " j: " << j << endl;
 
     return res;
@@ -37,9 +37,7 @@ int solve(vector<int> v, int res){
 
 int main(int argc, char **argv){
 	int m, n, temp;
-	//estw oti to diasthma einai j - k
-	//cum_diff[j] - cum_diff[k] <= 0
-	std::vector<int> diff; 
+	std::vector<int> diff;
 	std::vector<int> cum_diff;
 	ifstream f(argv[1]);
 	f >> m >> n;
