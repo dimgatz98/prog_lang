@@ -27,6 +27,38 @@ def is_found(move, queue):
 	else:
 		return False
 		
+
+# Function to generate all binary strings 
+def generateAllBinaryStrings(n, arr, i, queue): 
+	global res
+	global found
+			
+	if(found):
+		return
+
+	if i == n:
+		#if(arr == ["Q","Q","S","Q","S","S","Q","Q","S","S"]):
+			#print(arr)
+		if(is_found(arr, queue)):
+			res = arr
+			found = True
+		return
+      
+    # First assign "S" at ith position 
+    # and try for all other permutations 
+    # for remaining positions 
+	arr[i] = "S"
+	generateAllBinaryStrings(n, arr, i + 1, queue) 
+  
+	if(found):
+		return
+
+    # And then assign "Q" at ith position 
+    # and try for all other permutations 
+    # for remaining positions 
+	arr[i] = "Q"
+	generateAllBinaryStrings(n, arr, i + 1, queue) 
+
 f = open(sys.argv[1], "r")
 
 n = int(f.readline() )
@@ -45,13 +77,10 @@ print(n, queue)
 found = False
 length = 1
 while(not found):
-	moves = list(itertools.product(['S', 'Q'], repeat=length))
-	for move in moves:
-		if(is_found(move, queue)):
-			res = move
-			found = True
-			break
-
+	arr = [None] * length
+	generateAllBinaryStrings(length, arr, 0, queue)
+	if(found):
+		break
 	length += 1
 
 print(res)
