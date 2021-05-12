@@ -1,5 +1,4 @@
 import sys
-import itertools
 
 def is_found(move, queue):
 	l = len(queue)
@@ -72,7 +71,7 @@ for elem in line:
 
 f.close()
 
-print(n, queue)
+#print(n, queue)
 
 found = False
 length = 1
@@ -83,4 +82,6 @@ while(not found):
 		break
 	length += 1
 
-print(res)
+for elem in res:
+	print(elem, end="")
+print()
