@@ -1,11 +1,30 @@
 import sys
 
-def is_found(move, queue):
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+def is_found(move, queue, op):
+	counter = 1
 	l = len(queue)
 	sorted_queue = queue.copy()
 	sorted_queue.sort()
 	q = queue.copy()
 	s = []
+
+	if(op == 1):
+		print(bcolors.OKBLUE + str(counter), ". ", sep = "", end =  "")
+		print("Queue:", q, " / Stack:", s)
+		print()
+		counter += 1
+
 	for i in move:
 		if(i == "S" and len(s) == 0):
 			return False
@@ -19,6 +38,11 @@ def is_found(move, queue):
 		elif(i == "Q"):
 			temp = q.pop(0)
 			s.append(temp)
+		if(op == 1):
+			print(str(counter), ". ", sep = "", end =  "")
+			print("Queue:", q, " / Stack:", s)
+			print()
+			counter += 1
 
 	if((len(q) == l) and (q == sorted_queue)):
 		return True
@@ -38,7 +62,7 @@ def generateAllBinaryStrings(n, arr, i, queue):
 	if i == n:
 		#if(arr == ["Q","Q","S","Q","S","S","Q","Q","S","S"]):
 			#print(arr)
-		if(is_found(arr, queue)):
+		if(is_found(arr, queue, 0)):
 			res = arr
 			found = True
 		return
@@ -65,7 +89,6 @@ n = int(f.readline() )
 line = f.readline().split()
 
 queue = []
-stack = []
 for elem in line:
 	queue.append(int(elem) )
 
@@ -82,6 +105,7 @@ while(not found):
 		break
 	length += 1
 
+is_found(res, queue, 1)
 for elem in res:
 	print(elem, end="")
-print()
+print(bcolors.ENDC)

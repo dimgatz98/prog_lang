@@ -8,9 +8,9 @@ def is_found(move, queue):
 	s = []
 	for i in move:
 		if(i == "S" and len(s) == 0):
-			return False
+			return -1
 		if(i == "Q" and len(q) == 0):
-			return False
+			return -1
 
 		if(i == "S"):
 			temp = s.pop()
@@ -21,20 +21,27 @@ def is_found(move, queue):
 			s.append(temp)
 
 	if((len(q) == l) and (q == sorted_queue)):
-		return True
+		return 1
 
 	else:
-		return False
+		return 0
 	
 
 def solve(queue):
 	moves = ["S", "Q"]
 	
 	while(1):
+		to_remove = []
 		for i in range(len(moves)):
-			if(is_found(moves[i], queue)):
+			x = is_found(moves[i], queue)
+			if(x == 1):
 				return moves[i]
+			elif(x == -1):
+				to_remove.append(moves[i])
 		
+		for el in to_remove:
+			moves.remove(el)
+
 		for i in range(len(moves)):
 			moves.append(moves[i]+"Q")
 			moves[i] = moves[i]+"S"
@@ -52,7 +59,9 @@ for elem in line:
 
 f.close()
 
-#print(n, queue)
+if(is_found([], queue)):
+	print('empty')
+	exit()
 
 res = solve(queue)
 
