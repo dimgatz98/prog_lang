@@ -9,13 +9,10 @@ read_line(Stream, L) :-
     atomic_list_concat(Atoms, ' ', Atom),
     maplist(atom_number, Atoms, L).
 
-move([Queue|R1], Stack, 'Q', NewS, NewQ) :-
-    append([Queue], Stack, NewS),
-    append([], R1, NewQ).
-move(Queue, [Stack|R2], 'S', NewS, NewQ) :-
-    append([], R2, NewS),
-    append(Queue, [Stack], NewQ).
-
+move([Queue|R1], Stack, 'Q', [Queue|Stack], R1).
+move(Queue, [Stack|R2], 'S', R2, L) :-
+    reverse(Queue1, Queue),
+    reverse([Stack|Queue1], L).
 
 naive_sort(List,Sorted):-permutation(List,Sorted),is_sorted(Sorted).
 is_sorted([]).
