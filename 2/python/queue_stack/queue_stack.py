@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime
 
 class bcolors:
     HEADER = '\033[95m'
@@ -27,9 +28,9 @@ def is_found(move, queue, op):
 
 	for i in move:
 		if(i == "S" and len(s) == 0):
-			return False
+			return 0
 		if(i == "Q" and len(q) == 0):
-			return False
+			return 0
 
 		if(i == "S"):
 			temp = s.pop()
@@ -45,10 +46,10 @@ def is_found(move, queue, op):
 			counter += 1
 
 	if((len(q) == l) and (q == sorted_queue)):
-		return True
+		return 1
 
 	else:
-		return False
+		return 0
 		
 
 # Function to generate all binary strings 
@@ -60,8 +61,6 @@ def generateAllBinaryStrings(n, arr, i, queue):
 		return
 
 	if i == n:
-		#if(arr == ["Q","Q","S","Q","S","S","Q","Q","S","S"]):
-			#print(arr)
 		if(is_found(arr, queue, 0)):
 			res = arr
 			found = True
@@ -70,7 +69,7 @@ def generateAllBinaryStrings(n, arr, i, queue):
     # First assign "S" at ith position 
     # and try for all other permutations 
     # for remaining positions 
-	arr[i] = "S"
+	arr[i] = "Q"
 	generateAllBinaryStrings(n, arr, i + 1, queue) 
   
 	if(found):
@@ -79,7 +78,7 @@ def generateAllBinaryStrings(n, arr, i, queue):
     # And then assign "Q" at ith position 
     # and try for all other permutations 
     # for remaining positions 
-	arr[i] = "Q"
+	arr[i] = "S"
 	generateAllBinaryStrings(n, arr, i + 1, queue) 
 
 f = open(sys.argv[1], "r")
@@ -94,7 +93,16 @@ for elem in line:
 
 f.close()
 
+if(is_found([], queue, 0)):
+	print('empty')
+	exit()
+
+now = datetime.now().time()
+
 #print(n, queue)
+
+#is_found("QQSQSSQQSQQSQQQSSSSSQS", queue, 1)
+#exit()
 
 found = False
 length = 1
@@ -105,7 +113,10 @@ while(not found):
 		break
 	length += 1
 
-is_found(res, queue, 1)
+#is_found(res, queue, 1)
 for elem in res:
 	print(elem, end="")
-print(bcolors.ENDC)
+
+print()
+print("Elapsed time: %s seconds" % ( (datetime.now().time().minute - now.minute) * \
+	60 + datetime.now().time().second - now.second)+bcolors.ENDC)
