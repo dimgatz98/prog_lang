@@ -19,20 +19,37 @@ move(Queue, [Stack|R2], 'S', R2, L) :-
 
 split_list([A,B,C],A,B,C).
 
-solve([Tuple|Rest], Answer) :- %Tuple = (Move, Queue, Stack)
+solve([Tuple|Rest], Ans) :-
     split_list(Tuple, Move, Queue, Stack),
-    (not(Queue = []) ) -> (move(Queue, Stack, 'Q', NewQueue1, NewStack1) ,
-        append(Move, ["Q"], NewMove1),  
-        append(Rest, [ [NewMove1, NewQueue1, NewStack1] ], NewRest1),
-        (NewStack1 = [], is_sorted(NewQueue1) ) -> Answer = NewMove1, ! ) ;
-    NewRest1 = Rest,
-
-    (not(Stack = []) ) -> ( move(Queue, Stack, 'S', NewQueue2, NewStack2),
-        append(Move, ["S"], NewMove2),
-        append(NewRest1, [ [NewMove2, NewQueue2, NewStack2] ], NewRest2),
-        (NewStack2 = [], is_sorted(NewQueue2) ) -> Answer = NewMove2, ! ) ;
-    NewRest2 = NewRest1,
-    solve(NewRest2, Answer).    
+    (
+        (
+            not(Queue = []) -> 
+                    move(Queue, Stack, 'Q', NewQueue1, NewStack1),
+                    append(Move, ["Q"], NewMove1),  
+                    append(Rest, [ [NewMove1, NewQueue1, NewStack1] ], NewRest1) ;
+                    NewRest1 = Rest, NewStack1 = Stack, NewQueue1 = Queue 
+        )
+        ,
+        (
+            NewStack1 = [], is_sorted(NewQueue1) -> 
+                Ans = NewMove1 ;
+                (
+                    not(Stack = []) -> 
+                        move(Queue, Stack, 'S', NewQueue2, NewStack2),
+                        append(Move, ["S"], NewMove2),
+                        append(NewRest1, [ [NewMove2, NewQueue2, NewStack2] ], NewRest2), 
+                        (
+                           NewStack2 = [], is_sorted(NewQueue2) -> Ans = NewMove2 ;
+                           solve(NewRest2, Ans)
+                        )
+                        ;
+                        (
+                           solve(NewRest1, Ans)
+                        )    
+                )            
+        ) 
+            
+    ).    
 
 naive_sort(List,Sorted) :- permutation(List,Sorted),is_sorted(Sorted).
 is_sorted([]).
@@ -41,7 +58,4 @@ is_sorted([X,Y|T]):-X=<Y,is_sorted([Y|T]).
 
 qssort(File, Answer) :-
     read_input(File, _, Q),
-    %naive_sort(Q, Sorted),
-    %nb_setval(QSorted,Sorted),
-    is_sorted(Q) -> Answer = 'empty'; solve([Q, [], []], Answer0), atomics_to_string(Answer0,Answer),
-    !.
+    solve([ [[],Q, []] ], Answer0), atomics_to_string(Answer0, Answer), !.
