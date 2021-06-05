@@ -23,15 +23,13 @@ solve(Q, S, []) :-
      S=[],
      is_sorted(Q). 
 
-solve(Q, S, [Move|Moves]) :-
+solve([ [Q, S, Moves] | Rest ]) :-
     move(Q, S, Move, NewS, NewQ),
     solve(NewQ, NewS, Moves).
 
 qssort(File, Answer) :-
     read_input(File, _, Q),
-    %naive_sort(Q, Sorted),
-    %nb_setval(QSorted,Sorted),
-    length(Answer0, _),
+    %length(Answer0, _),
     solve(Q, [], Answer0),
     (Answer0=[] -> Answer = 'empty' ; atomics_to_string(Answer0,Answer)),
     !.
