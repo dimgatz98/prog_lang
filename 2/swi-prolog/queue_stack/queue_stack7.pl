@@ -64,7 +64,7 @@ scan_list([], List2, Answer, Set) :-
 scan_list(List1, List2, Answer, Set) :-
     List1 = [Elem|Rest1],
     solve(List1, List2, NewList2, Answer, Set, NewSet),
-    Asnwer = [] -> scan_list(Rest1, NewList2, Answer, NewSet) ; !.
+    Answer = [] -> scan_list(Rest1, NewList2, Answer, NewSet) ; !.
      
 naive_sort(List,Sorted) :- permutation(List,Sorted),is_sorted(Sorted).
 is_sorted([]).

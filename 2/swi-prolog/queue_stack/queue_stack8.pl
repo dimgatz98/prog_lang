@@ -22,7 +22,7 @@ move(Queue, [Stack|R2], 'S', L, R2) :-
 
 split_list([A,B,C],A,B,C).
 
-create_int_from_queue_stack([[], []], Count, Res) !.
+create_int_from_queue_stack([[], []], Count, Res) :- !.
 create_int_from_queue_stack([ [], [A|RestStack]], Count, Res) :-
     Res1 is 10 ^ Count,
     Res2 is Res1 * A, 
@@ -85,7 +85,7 @@ scan_list([], List2, Answer, Set) :-
 scan_list(List1, List2, Answer, Set) :-
     List1 = [Elem|Rest1],
     solve(List1, List2, NewList2, Answer, Set, NewSet),
-    Asnwer = [] -> scan_list(Rest1, NewList2, Answer, NewSet) ; !.
+    Answer = [] -> scan_list(Rest1, NewList2, Answer, NewSet) ; !.
      
 naive_sort(List,Sorted) :- permutation(List,Sorted),is_sorted(Sorted).
 is_sorted([]).
