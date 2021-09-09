@@ -1,0 +1,166 @@
+Dimitrios Gkatziouras, el16145.
+
+Erwthma 1)
+	a)	<S>
+		  |	 	
+		(<L>)
+		  |
+		<L>,				 <S>
+		|						|
+		<L>, 		<S>			(<L>)
+		|			|
+		<S>			a							
+		|								|
+		(<L>)								<S>
+		|
+		<L>, 	<S>
+		|		|						|
+		<S>		a						a
+		|
+		a
+
+	b)
+		Den einai diforoumenh ka8ws ka8e fora pou pros8etoume ena neo mh termatiko sumvolo mpainei sthn idia meria kai kata sunepeia ta dentra megalwnoun pros thn idia kateu8unsh.
+	c)
+		Prokeitai gia mia glwssa zugismenwn paren8esewn oi opoies perilamvanoun mesa tous osodhpote megalo plh8os xarakthrwn 'a' xwrismenwn me komma.
+
+Erwthma 2)
+	a)
+	Arxikh sunarthsh:
+		fun common_prefix x y =
+		let fun aux (h1 :: t1) (h2 :: t2) prefix =
+			if h1 = h2 then ???
+			else ???
+			| aux s1 s2 prefix = ???
+		in aux x y []
+		end
+
+	Nea sunarthsh:
+		fun common_prefix x y =
+		let fun aux (h1 :: t1) (h2 :: t2) prefix =
+			if h1 = h2 then let val temp = (prefix @ [h1]) in aux t1 t2 prefix end
+			else (prefix, (h1::t1), (h2::t2))
+			| aux s1 s2 prefix = if s1 = s2 then ([], [], prefix @ s1) else ([s1], [s2], prefix)
+		in aux x y []
+		end
+
+	b)
+	Arxikos kwdikas:
+		unique([]).
+		unique([Item | Rest]) :-
+			member(Item, Rest), fail.
+		unique([_ | Rest]) :-
+			unique(Rest).
+
+	Neos kwdikas:
+		unique([]).
+		unique([Item | Rest]) :-
+			not(member(Item, Rest)),
+			unique(Rest).
+
+	c)
+	Static dispatch:
+		4
+		17
+		1
+		42
+		4
+		17
+
+	dynamic dispatch:
+		4
+		17
+		1
+		42
+		1
+		42
+
+	d)
+	static scoping:
+		4 1
+		4
+		5 
+
+	dynamic scoping:
+		4 4
+		5
+		1
+
+Erwthma 3)
+	An to susthma xrhsimopoiouse eggrafes drasthriopoihshs xwris sundesmous fwliasmatos tote ean xreiazotan kapoia klhshs mias eswterikhs sunarthshs thn timh mias metavlhths h opoia vriskotan sthn eggrafh drasthriopoihshs ths kalousas sunarthsh (ths ekswterikhs) de 8a eixe tropo na thn prospelasei.
+	Paradeigma se ml:
+	
+	fun foo x = 
+		let 
+			fun bar y = 
+				y + x
+		in bar 21
+		end
+
+	Se authn thn periptwsh ean h sunarthsh bar den kratouse kapoio nesting link de 8a mporouse na prospelasei th metavlhth x h opoia einai mia metavlhth apo8hkeumenh sthn eggrafh ths foo. O logos gia ton opoio den mporouse na mou er8ei kapoio pio aplo paradeigma einai epeidi h bar anazhta apo thn eggrafh ths foo apla mia metavlhth (tupikh parametro) kai 8ewrw oti de 8a mporouse na anazhta kati mikrotero.
+
+
+Erwthma 4)
+	datatype tree = Empty | Node of tree * int * tree
+
+	fun trim Node (Empty, val, Empty) = []
+	| trim (Node (Node (l, val, r), _, Empty ) ) acc = 
+			[Node (l, val, r) :: trim (Node (l, val, r)] :: acc
+	| trim (Node (Empty, _, Node (l, val, r) ) ) acc = 
+			[Node (l, val, r)::trim (Node (l, val, r) )] :: acc
+	| trim (Node (Node (l1, val1, r1), _, Node (l2, val2, r2) ) ) acc = 
+			if (val1 mod 2) <> (val2 mod 2) 
+			then [Node (l1, val1, r1) :: trim (Node (l1, val1, r1) acc)  ] :: [Node (l2, val1, r2) :: (trim (Node (l2, val2, r2) acc) ) ] :: acc
+			else [(trim (Node (l1, val1, r1) acc) ) :: (trim (Node (l2, val2, r2) acc) ) ] :: acc
+
+Erwthma 5)
+	a)
+	find_max(n(T1,T2,T3), TempMax, Res) :- 
+		(T1 = n(T11, T12, T13) -> find_max(T1, TempMax, Res1); Res1 is max(TempMax, T1)), #se autes tis treis grammes anti gia find_max eixa maximize
+		(T2 = n(T21, T22, T23) -> find_max(T2, Res1, Res2); Res2 is max(Res1, T2)),
+		(T3 = n(T31, T32, T33) -> find_max(T3, Res2, Res); Res is max(Res2, T3)).
+
+	construct_max_tree(n(T1,T2,T3), n(MT1, MT2, MT3), Max) :-
+		(T1 = n(T11, T12, T13) -> construct_max_tree(T1, MT1, Max); MT1 is Max ),
+		(T2 = n(T21, T22, T23) -> construct_max_tree(T2, MT2, Max); MT2 is Max ),
+		(T3 = n(T31, T32, T33) -> construct_max_tree(T3, MT3, Max); MT3 is Max ).
+
+	maximize(Tree, MaxTree) :- find_max(Tree, 0, Res), construct_max_tree(Tree, MaxTree, Res).
+
+	b)
+	unoddsum(n(T1, T2, T3), Term) :- 
+		( (not(T1=n(T11,T12,T13) ), not(T2=n(T21,T22,T23) ), not(T3=n(T31,T32,T33) ) ) 
+			->  ( (Temp is (T1 + T2 + T3) mod 2, Temp = 1) -> Term = 17 ; Term = n(NT1,NT2,NT3) );					
+				( 
+					(
+						(T1 = n(T11,T12,T13) -> unoddsum(T1, NT1) ; NT1 is T1)
+						(T2 = n(T21,T22,T23) -> unoddsum(T2, NT2) ; NT2 is T2)
+						(T3 = n(T31,T32,T33) -> unoddsum(T3, NT3) ; NT3 is T3)
+					)	
+				)
+		).
+
+	c)
+	Oxi giati se agno sunarthsiako programmatismo de 8a mporousame na allazame ta dedomena pou 8a epestrefe h prohgoumenh klhsh ths sunarthshs me vash to apotelesma ths epomenhs.
+
+Erwthma 6)
+	def sliding(A, K):
+		d = {}
+		for i in range(len(A) - K + 1):
+			if(sum(A[i:i+K]) in d):
+				d[sum(A[i:i+K])] += 1
+			else:
+				d[sum(A[i:i+K])] = 1
+
+		temp_max = -1
+		for k, v in d.items():
+			if(v > temp_max):
+				temp_max = v
+				temp_max_k = k
+			elif(v == temp_max):
+				if(k > temp_max_k):
+					temp_max_k = k
+
+		return (temp_max_k, temp_max)
+
+	print(sliding([1, 4, 2, 3, 2, 1, 3, 4, 2], 4) )
